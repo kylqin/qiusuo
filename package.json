@@ -1,0 +1,23 @@
+{
+  "name": "qiusuo",
+  "version": "0.0.1",
+  "description": "Documents management system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kylqin/qiusuo.git"
+  },
+  "keywords": [
+    "Document",
+    "Management"
+  ],
+  "author": "kylqin <kylqin@outlook.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kylqin/qiusuo/issues"
+  },
+  "homepage": "https://github.com/kylqin/qiusuo#readme"
+}
