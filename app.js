@@ -7,6 +7,8 @@ const CmdTable = {
     '--help': showHelp,
     '-v': showVersion,
     '--version': showVersion,
+    '-c': showConf,
+    '--conf': showConf,
 
     default: showHelp
 }
@@ -36,6 +38,11 @@ function showHelp () {
 
 function showVersion () {
     MSG.show(MSG.NAME.VERSION, { version: pjson.version })
+}
+
+function showConf () {
+    // MSG.show(MSG.NAME.VERSION, { version: pjson.version })
+    console.log(JSON.stringify(CONF, null, 2))
 }
 
 module.exports = {
