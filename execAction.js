@@ -10,11 +10,9 @@ const uiBlessed = require('./ui/blessed')
 
 function execAction(name, rest) {
     const section = CONF[name]
-    const extensions = (
-        !section.fileExtensions ||
-        !(section.fileExtensions instanceof Array) ||
-        section.fileExtensions.length === 0
-    ) ? [] : section.fileExtensions
+
+    const extensions = Utils.ensureArray(section.fileExtensions)
+    const ignoreDirs = Utils.ensureArray(section.ignoreDirs)
 
     const isItem = fileName => {
         if (extensions.length === 0) {
@@ -24,7 +22,7 @@ function execAction(name, rest) {
         return extensions.indexOf(ext) !== -1
     }
 
-    const list = createList(name, isItem)
+    const list = createList(name, isItem, ignoreDirs)
     const searchTerm = rest.join(' ')
     const filteredLunr = sLunr.search(searchTerm, list)
     const filteredSimple = sSimple.search(searchTerm, list)
@@ -37,7 +35,7 @@ function execAction(name, rest) {
 /**
  * Create the list to search from
  */
-function createList (name, isItem) {
+function createList (name, isItem, ignoreDirs) {
     const section = CONF[name]
     const list = []
     const location = section.location
@@ -45,7 +43,7 @@ function createList (name, isItem) {
     checkLocation(name) || process.exit(1)
 
     try {
-        Utils.recdir(location, function (fileName) {
+        Utils.recdir(location, ignoreDirs, function (fileName) {
             if (isItem(fileName)) {
                 list.push({
                     name: path.basename(fileName),

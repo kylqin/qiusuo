@@ -38,13 +38,12 @@ const pad = (length, content, padWithChar = ' ') => {
 /**
  * Run action for directory and it's children directories recursively
  */
-function recdir(pathDir, action) {
+function recdir(pathDir, ignoreDirs, action) {
     const stats = fs.statSync(pathDir)
     if (stats.isDirectory()) {
         const contents = fs.readdirSync(pathDir)
-        // console.log(contents);
         for (const c of contents) {
-            recdir(path.join(pathDir, c), action)
+            ignoreDirs.indexOf(c) === -1 && recdir(path.join(pathDir, c), ignoreDirs, action)
         }
     } else {
         action(pathDir)
@@ -77,6 +76,8 @@ module.exports = {
     recdir,
 
     pad,
+
+    ensureArray: a => a instanceof Array ? a : [],
 
     color: {
         NAME: CL,
