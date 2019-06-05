@@ -1,6 +1,7 @@
 const pjson = require('./package.json')
 const MSG = require('./utils/msg')
 const CONF = require('./config/conf')
+const execA = require('./execAction')
 
 const CmdTable = {
     '-h': showHelp,
@@ -9,6 +10,8 @@ const CmdTable = {
     '--version': showVersion,
     '-c': showConf,
     '--conf': showConf,
+    'e': execAction,
+    'exec': execAction,
 
     default: showHelp
 }
@@ -20,11 +23,14 @@ function runApp() {
     fn(A.rest)
 }
 
-function parseArgs() {
+function parseArgs(_argv) {
     // command line args
-    const cmd = process.argv[2]
-    const args = process.argv.splice(3);
-    const rest = args.join(' ') || ''
+    let argv = _argv
+    if (!_argv) {
+        argv = process.argv.slice(2)
+    }
+    const cmd = argv[0]
+    const rest =argv.slice(1)
 
     return {
         cmd,
@@ -32,19 +38,31 @@ function parseArgs() {
     }
 }
 
-function showHelp () {
-    MSG.show(MSG.NAME.HELP, { userConfigFilePath: CONF.userConfigFilePath })
+function execAction(argv) {
+    const { cmd, rest } = parseArgs(argv)
+    if (CONF[cmd]) {
+        return execA(cmd, rest)
+    }
+    return showHelp()
 }
 
-function showVersion () {
-    MSG.show(MSG.NAME.VERSION, { version: pjson.version })
+function showHelp() {
+    MSG.show(MSG.NAME.HELP, {
+        userConfigFilePath: CONF.userConfigFilePath
+    })
 }
 
-function showConf () {
+function showVersion() {
+    MSG.show(MSG.NAME.VERSION, {
+        version: pjson.version
+    })
+}
+
+function showConf() {
     // MSG.show(MSG.NAME.VERSION, { version: pjson.version })
     console.log(JSON.stringify(CONF, null, 2))
 }
 
 module.exports = {
-  run: runApp
+    run: runApp
 }

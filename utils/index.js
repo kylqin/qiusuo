@@ -35,6 +35,22 @@ const pad = (length, content, padWithChar = ' ') => {
     return left ? `${padWithStr}${ctt}` : `${ctt}${padWithStr}`
 }
 
+/**
+ * Run action for directory and it's children directories recursively
+ */
+function recdir(pathDir, action) {
+    const stats = fs.statSync(pathDir)
+    if (stats.isDirectory()) {
+        const contents = fs.readdirSync(pathDir)
+        // console.log(contents);
+        for (const c of contents) {
+            recdir(path.join(pathDir, c), action)
+        }
+    } else {
+        action(pathDir)
+    }
+}
+
 // see: https://misc.flogisoft.com/bash/tip_colors_and_formatting
 const CL = {
     Red: '\x1b[31m',
@@ -57,18 +73,8 @@ module.exports = {
         }
         return true
     },
-    recdir: (pathDir, action) => {
-        const stats = fs.statSync(pathDir)
-        if (stats.isDirectory()) {
-            const contents = fs.readdirSync(pathDir)
-            // console.log(contents);
-            for (const c of contents) {
-                recdir(path.join(pathDir, c), action)
-            }
-        } else {
-            action(pathDir)
-        }
-    },
+
+    recdir,
 
     pad,
 

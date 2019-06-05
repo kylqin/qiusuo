@@ -11,7 +11,7 @@ try {
   config.userConfigFilePath = userConfigFilePath
   config.homeDir = homeDir
 } catch (e) {
-  MSG.show(MSG.NAME.USER_CONF_INVALID, { userConfigFilePath })
+  MSG.show(MSG.NAME.UCONF_INVALID, { userConfigFilePath })
 
   // Exit directly
   process.exit(1)

@@ -19,5 +19,10 @@
   "bugs": {
     "url": "https://github.com/kylqin/qiusuo/issues"
   },
-  "homepage": "https://github.com/kylqin/qiusuo#readme"
+  "homepage": "https://github.com/kylqin/qiusuo#readme",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "lunr": "^2.3.6",
+    "open": "^6.3.0"
+  }
 }
