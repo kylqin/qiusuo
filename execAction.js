@@ -10,15 +10,11 @@ const uiBlessed = require('./ui/blessed')
 
 function execAction(name, rest) {
     const section = CONF[name]
-    const extensions = (() => {
-        return (
-                !section.fileExtensions ||
-                typeof section.fileExtensions !== 'array' ||
-                section.fileExtensions.length === 0
-            ) ? [] :
-            section.fileExtensions
-    })()
-
+    const extensions = (
+        !section.fileExtensions ||
+        !(section.fileExtensions instanceof Array) ||
+        section.fileExtensions.length === 0
+    ) ? [] : section.fileExtensions
 
     const isItem = fileName => {
         if (extensions.length === 0) {
