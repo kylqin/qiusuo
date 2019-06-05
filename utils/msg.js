@@ -16,10 +16,9 @@ Options:
 
 These are common sub commands used to search information:
 
-   book       Search books
+   exec, e <section>  Search documents with types and location configured in section <section>
 
-Please modify the configuration file \`${args.userConfigFilePath}\` (created it if not
-existed), assigning the field \`booksdir\` the path where your books located.
+Please modify the configuration file \`${args.userConfigFilePath}\` (created it if not existed).
 `,
 
     // version
