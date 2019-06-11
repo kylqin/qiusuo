@@ -8,7 +8,7 @@ const sLunr = require('./searchers/lunr')
 
 const uiBlessed = require('./ui/blessed')
 
-function execAction(name, rest) {
+function execAction(name, rest, createUI = true) {
     const section = CONF[name]
 
     const extensions = Utils.ensureArray(section.fileExtensions)
@@ -28,7 +28,13 @@ function execAction(name, rest) {
     const filteredSimple = sSimple.search(searchTerm, list)
     const filtered = mergeResult(filteredLunr, filteredSimple)
 
-    uiBlessed.p(filtered)
+    if (createUI) {
+        uiBlessed.p(filtered, searchTerm, (st, receiveResult) => {
+            const filtered = execAction(name, [st], false) // Do not re-create UI, just re-render it
+            receiveResult(filtered)
+        })
+    }
+    return filtered
 }
 
 

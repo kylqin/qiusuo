@@ -9,22 +9,27 @@ const {
     _lightblue
 } = Utils.color
 
+const M = {
+    Normal: 'Normal',
+    Command: 'Command',
+    Visual: 'Visual',
+    Insert: 'Insert',
+    Motion: 'Motion'
+}
+
 module.exports = {
-    p: function (filtered) {
-        show(filtered)
+    p: function (filtered, searchTerm, requestResult) {
+        show(filtered, searchTerm, requestResult)
     }
 }
 
-function show(list) {
+function show(lst, searchTerm, requestResult) {
     const State = {
-        prefixNum: ''
+        _lst: lst,
+        inputSearchText: `*${searchTerm}`,
+        _mode: M.Normal,
+        prefixNum: '',
     }
-
-    const listMap = list.reduce((acc, row, idx) => {
-        acc[mkLabelText(row, idx + 1)] = row
-        return acc
-    }, {})
-    const listLabels = list.map((row, idx) => mkLabelText(row, idx))
 
     // Create a screen object.
     const screen = blessed.screen({
@@ -32,21 +37,29 @@ function show(list) {
         autoPadding: true,
         dockBorders: true,
         fullUnicode: true,
-    });
-    screen.title = '求索 - qiusou';
+    })
 
-    const List = mkList(screen, list)
+    screen.title = '求索 - qiusou'
 
-    List.setItems(listLabels)
+    const Input = addInput(screen)
+    const List = mkList(screen)
 
-    /**
-     * List children events
-     */
-    for (let [idx, row] of list.entries()) {
-        List.children[idx + 1].on('click', (i => el => {
-            updatedLineNumbers(i)
-            screen.render()
-        })(idx))
+    function setItems () {
+        const listLabels = State._lst.map((row, idx) => mkLabelText(row, idx))
+        List.setItems(listLabels)
+
+        /**
+         * List children events
+         */
+        for (let [idx, row] of State._lst.entries()) {
+            List.children[idx + 1].on('click', (i => el => {
+                updatedLineNumbers(i)
+                screen.render()
+            })(idx))
+        }
+
+        // Render the screen.
+        screen.render();
     }
 
     /**
@@ -64,40 +77,72 @@ function show(list) {
      */
     // Accumulate the prefix num
     const regDigit = /^\d$/
-    screen.on('keypress', (key) => {
+    screen.on('keypress', (key, o) => {
+        // log('keypress -> ' + key + JSON.stringify(o))
         if (regDigit.test(key)) {
             State.prefixNum += key
+        } else if (isMode(M.Normal) && key === '/') {
+            setMode(M.Command)
+            // Input.focus()
+            State.inputSearchText = ''
+        } else if (isMode(M.Command) && o.name === 'enter') {
+            setMode(M.Normal)
+            // log('keypress -> ' + 'Enter')
+            execAction('search')
         }
+
+        if (isMode(M.Command)) {
+            setInputContent(State.inputSearchText + key)
+        }
+        return false
     })
 
     // key map
     // Quit on Escape, q, or Control-C.
-    screen.key(['q'], (ch, key) => {
+    mapNormal(['q'], (ch, key) => {
         return process.exit(0)
     })
-    screen.key(['g'], (ch, key) => {
+    mapNormal(['g'], (ch, key) => {
         select(0)
     })
-    screen.key(['S-g'], (ch, key) => {
-        select(list.length - 1)
+    mapNormal(['S-g'], (ch, key) => {
+        select(State._lst.length - 1)
     })
-    screen.key(['j'], (ch, key) => {
+    mapNormal(['j'], (ch, key) => {
         selectOffset(1 * Number(applyPrefixNum() || 1))
     })
-    screen.key(['k'], (ch, key) => {
+    mapNormal(['k'], (ch, key) => {
         selectOffset(-1 * Number(applyPrefixNum() || 1))
     })
-    screen.key(['S-j', 'C-n'], (ch, key) => {
+    mapNormal(['S-j', 'C-n', 'linefeed'], (ch, key) => { // linefeed is C-j
         selectOffset(15 * Number(applyPrefixNum() || 1))
     })
-    screen.key(['S-k', 'C-p'], (ch, key) => {
+    mapNormal(['S-k', 'C-p', 'C-k'], (ch, key) => {
         selectOffset(-15 * Number(applyPrefixNum() || 1))
     })
-    screen.key(['o'], (ch, key) => {
+    mapNormal(['o'], (ch, key) => {
         openItem(List.selected)
     })
-    screen.key(['S-o'], (ch, key) => {
+    mapNormal(['S-o'], (ch, key) => {
         openItemDir(List.selected)
+    })
+    mapNormal(['n'], (ch, key) => {
+        const frIdx = List.fuzzyFind(State.inputSearchText.replace(/\*/, ''))
+        // log(State.inputSearchText.replace(/\*/, '') + ' : ' + frIdx)
+        select(frIdx)
+    })
+
+    // Command map
+    mapCommand(['backspace'], (ch, key) => {
+        // log('mapCommand backspace')
+        setInputContent(`/${State.inputSearchText.slice(1, -2)}`)
+    })
+    mapCommand(['C-u'], (ch, key) => {
+        setInputContent('/')
+    })
+    mapCommand(['C-g'], (ch, key) => {
+        setInputContent('')
+        setMode(M.Normal)
     })
 
     /**
@@ -115,12 +160,12 @@ function show(list) {
     }
     // Select row by offset
     function selectOffset(offset) {
-        select(Math.max(0, Math.min(List.selected + offset, list.length)))
+        select(Math.max(0, Math.min(List.selected + offset, State._lst.length)))
     }
 
     // Update line numbers
     function updatedLineNumbers(idx) {
-        for (let [i, row] of list.entries()) {
+        for (let [i, row] of State._lst.entries()) {
             List.setItem(List.children[i + 1], mkLabelText(row, i == idx ? i : Math.abs(i - idx)))
         }
     }
@@ -136,34 +181,88 @@ function show(list) {
         return pn
     }
 
+    function setInputContent (ctt) {
+        // log('setInputContent -> ' + ctt)
+        State.inputSearchText = ctt
+        Input.setContent(State.inputSearchText)
+        screen.render()
+    }
+
     // Open selected item
     function openItem(idx) {
-        open(list[idx].url)
+        open(State._lst[idx].url)
     }
     // Open selected item
     function openItemDir(idx) {
-        // log(path.dirname(list[idx].url.slice(7)))
-        open(path.dirname(list[idx].url))
+        open(path.dirname(State._lst[idx].url))
     }
 
-    // Render the screen.
-    screen.render();
+    // Exec action
+    function execAction (name) {
+        if (name === 'search') {
+            // search
+            setInputContent(State.inputSearchText.replace(/\//, '*'))
+            const st = State.inputSearchText.slice(1)
+            requestResult(st, (result) => {
+                State._lst = result || []
+                setItems()
+            })
+        }
+    }
+
+    /**
+     * _state
+     */
+    function mapNormal(keys, handler) {
+        screen.key(keys, (...args) => { isMode(M.Normal) && handler(...args) })
+    }
+    function mapCommand(keys, handler) {
+        screen.key(keys, (...args) => { isMode(M.Command) && handler(...args) })
+    }
+
+    function setMode(mode) {
+        State._mode = mode
+    }
+    function isMode(mode) {
+        return State._mode === mode
+    }
+
+    setItems()
 }
 
-function mkList(screen, list) {
+function addInput(screen) {
+    const Input = blessed.input({
+        parent: screen,
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: 'shrink',
+        border: 'line',
+        style: {
+            // bg: '#FCB0A3',
+            border: {
+                fg: 'blue'
+            }
+        }
+    })
+    return Input
+}
+
+function mkList(screen) {
     const List = blessed.list({
         parent: screen,
         label: ' {bold}{cyan-fg}Items{/cyan-fg}{/bold}',
         tags: true,
         // draggable: true,
-        top: 0,
-        right: 0,
+        // top: '80',
+        bottom: 0,
+        left: 0,
         width: '100%',
-        height: '100%',
+        height: '100%-3',
         // keys: true,
         // vi: true,
         mouse: true,
-        // border: 'line',
+        border: 'line',
         scrollbar: {
             ch: ' ',
             track: {
