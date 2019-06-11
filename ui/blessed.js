@@ -72,67 +72,85 @@ function show(list) {
 
     // key map
     // Quit on Escape, q, or Control-C.
-    screen.key(['q'], (ch, key) => { return process.exit(0) })
-    screen.key(['g'], (ch, key) => { select(0) })
-    screen.key(['S-g'], (ch, key) => { select(list.length - 1) })
-    screen.key(['j'], (ch, key) => { selectOffset(1 * Number(applyPrefixNum() || 1)) })
-    screen.key(['k'], (ch, key) => { selectOffset(-1 * Number(applyPrefixNum() || 1)) })
-    screen.key(['S-j', 'C-n'], (ch, key) => { selectOffset(15 * Number(applyPrefixNum() || 1)) })
-    screen.key(['S-k', 'C-p'], (ch, key) => { selectOffset(-15 * Number(applyPrefixNum() || 1)) })
-    screen.key(['o'], (ch, key) => { openItem(List.selected) })
-    screen.key(['S-o'], (ch, key) => { openItemDir(List.selected) })
+    screen.key(['q'], (ch, key) => {
+        return process.exit(0)
+    })
+    screen.key(['g'], (ch, key) => {
+        select(0)
+    })
+    screen.key(['S-g'], (ch, key) => {
+        select(list.length - 1)
+    })
+    screen.key(['j'], (ch, key) => {
+        selectOffset(1 * Number(applyPrefixNum() || 1))
+    })
+    screen.key(['k'], (ch, key) => {
+        selectOffset(-1 * Number(applyPrefixNum() || 1))
+    })
+    screen.key(['S-j', 'C-n'], (ch, key) => {
+        selectOffset(15 * Number(applyPrefixNum() || 1))
+    })
+    screen.key(['S-k', 'C-p'], (ch, key) => {
+        selectOffset(-15 * Number(applyPrefixNum() || 1))
+    })
+    screen.key(['o'], (ch, key) => {
+        openItem(List.selected)
+    })
+    screen.key(['S-o'], (ch, key) => {
+        openItemDir(List.selected)
+    })
 
-  /**
-   * helpers
-   */
-  // Generate line context with line number
-  function mkLabelText(row, idx) {
-      return `{gray-fg}${Utils.pad(3, idx, ' ')}{/gray-fg} ${row.string}`
-  }
+    /**
+     * helpers
+     */
+    // Generate line context with line number
+    function mkLabelText(row, idx) {
+        return `{gray-fg}${Utils.pad(3, idx, ' ')}{/gray-fg} ${row.string}`
+    }
 
-  // Select row by index
-  function select(idx) {
-      updatedLineNumbers(idx)
-      List.select(idx)
-  }
-  // Select row by offset
-  function selectOffset(offset) {
-      select(Math.max(0, Math.min(List.selected + offset, list.length)))
-  }
+    // Select row by index
+    function select(idx) {
+        updatedLineNumbers(idx)
+        List.select(idx)
+    }
+    // Select row by offset
+    function selectOffset(offset) {
+        select(Math.max(0, Math.min(List.selected + offset, list.length)))
+    }
 
-  // Update line numbers
-  function updatedLineNumbers(idx) {
-      for (let [i, row] of list.entries()) {
-          List.setItem(List.children[i + 1], mkLabelText(row, i == idx ? i : Math.abs(i - idx)))
-      }
-  }
+    // Update line numbers
+    function updatedLineNumbers(idx) {
+        for (let [i, row] of list.entries()) {
+            List.setItem(List.children[i + 1], mkLabelText(row, i == idx ? i : Math.abs(i - idx)))
+        }
+    }
 
-  // Append the prefix num
-  function appendPrefixNum(char) {
-      State.prefixNum += char
-  }
-  // Apply the prefix num and clear it
-  function applyPrefixNum() {
-      const pn = State.prefixNum
-      State.prefixNum = ''
-      return pn
-  }
+    // Append the prefix num
+    function appendPrefixNum(char) {
+        State.prefixNum += char
+    }
+    // Apply the prefix num and clear it
+    function applyPrefixNum() {
+        const pn = State.prefixNum
+        State.prefixNum = ''
+        return pn
+    }
 
-  // Open selected item
-  function openItem(idx) {
-      open(list[idx].url)
-  }
-  // Open selected item
-  function openItemDir(idx) {
-      // log(path.dirname(list[idx].url.slice(7)))
-      open(path.dirname(list[idx].url))
-  }
+    // Open selected item
+    function openItem(idx) {
+        open(list[idx].url)
+    }
+    // Open selected item
+    function openItemDir(idx) {
+        // log(path.dirname(list[idx].url.slice(7)))
+        open(path.dirname(list[idx].url))
+    }
 
-  // Render the screen.
-  screen.render();
-  }
+    // Render the screen.
+    screen.render();
+}
 
-  function mkList(screen, list) {
+function mkList(screen, list) {
     const List = blessed.list({
         parent: screen,
         label: ' {bold}{cyan-fg}Items{/cyan-fg}{/bold}',
@@ -197,7 +215,7 @@ function show(list) {
     return List
 }
 
-  // Help to debug
-  function log(msg) {
-      cp.execSync(`echo "${msg}" >> _log`)
-  }
+// Help to debug
+function log(msg) {
+    cp.execSync(`echo "${msg}" >> _log`)
+}
