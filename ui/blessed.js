@@ -211,7 +211,7 @@ function show(lst, searchTerm, requestResult) {
     }
 
     /**
-     * _state
+     * _mode
      */
     function mapNormal(keys, handler) {
         screen.key(keys, (...args) => { isMode(M.Normal) && handler(...args) })
