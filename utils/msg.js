@@ -13,6 +13,7 @@ const MSG = {
 Options:
    --help, -h      Show this infomation
    --version, -v   Show version
+   --conf, -c      Show configuration
 
 These are common sub commands used to search information:
 

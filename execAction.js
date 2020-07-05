@@ -49,11 +49,11 @@ function createList (name, isItem, ignoreDirs) {
     checkLocation(name) || process.exit(1)
 
     try {
-        Utils.recdir(location, ignoreDirs, function (fileName) {
-            if (isItem(fileName)) {
+        Utils.recdir(location, ignoreDirs, function (filePath) {
+            if (isItem(filePath)) {
                 list.push({
-                    name: path.basename(fileName),
-                    path: fileName
+                    name: path.basename(filePath),
+                    path: filePath
                 })
             }
         })
