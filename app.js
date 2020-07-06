@@ -1,7 +1,8 @@
 const pjson = require('./package.json')
 const MSG = require('./utils/msg')
 const CONF = require('./config/conf')
-const execA = require('./execAction')
+const execSearch = require('./execSearch')
+const execCollect = require('./execCollect')
 
 const CmdTable = {
     '-h': showHelp,
@@ -10,14 +11,24 @@ const CmdTable = {
     '--version': showVersion,
     '-c': showConf,
     '--conf': showConf,
-    'e': execAction,
-    'exec': execAction,
+
+    // '-s': execAction,
 
     default: showHelp
 }
 
+const SubCmdTable = {
+    'search': execSearch,
+    's': execSearch,
+    'collect': execCollect,
+    'c': execCollect,
+}
+
 function runApp() {
     const A = parseArgs()
+    if (A.cmd && A.cmd.startsWith('-s')) {
+        return execAction(A.rest[0], A.rest.slice(1))
+    }
     const fn = CmdTable[A.cmd] || CmdTable.default
 
     fn(A.rest)
@@ -29,8 +40,13 @@ function parseArgs(_argv) {
     if (!_argv) {
         argv = process.argv.slice(2)
     }
-    const cmd = argv[0]
+    let cmd = argv[0]
     const rest =argv.slice(1)
+
+    if (cmd && cmd.startsWith('--section=')) {
+        rest.unshift(cmd.split('=')[1])
+        cmd = '-s'
+    }
 
     return {
         cmd,
@@ -38,10 +54,11 @@ function parseArgs(_argv) {
     }
 }
 
-function execAction(argv) {
+function execAction(section, argv) {
     const { cmd, rest } = parseArgs(argv)
-    if (CONF[cmd]) {
-        return execA(cmd, rest)
+    // console.log('execAction ->', section, cmd, rest)
+    if (CONF[section]) {
+        return SubCmdTable[cmd](section, rest)
     }
     return showHelp()
 }

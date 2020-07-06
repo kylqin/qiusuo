@@ -8,16 +8,19 @@ const {
 const MSG = {
     // help
     HELP: (args) => `Usage: qs {-h | --help | -v | --version}
-       qs <subCommand> <restArgs>
+       qs --section=<sectionName> <subCommand> <restArgs>
 
 Options:
    --help, -h      Show this infomation
    --version, -v   Show version
    --conf, -c      Show configuration
+   --section=<sectionName>, -s   Sub commnand will execute with this argument, it is required
 
 These are common sub commands used to search information:
 
-   exec, e <section>  Search documents with types and location configured in section <section>
+   exec, e         Search documents with types and location configured in section <section>
+   collect, c      Collect files from \`collectFrom\` directories
+   collect --dry-run, c --dry-run
 
 Please modify the configuration file \`${args.userConfigFilePath}\` (created it if not existed).
 `,
@@ -39,6 +42,10 @@ Please modify the configuration file \`${args.userConfigFilePath}\` (created it 
 
     // user config location dose not exist
     UCONF_COLLECTFROM_NOT_EXIST: args => `CollectFrom path dose not exist for section ${args.section}, location: ${args.collectFrom}`,
+
+    INFO_MOVE_FILE_FAIL: args => ` ${red('✘')} ${args.filePath}` + (args.reason ? ` [${red(args.reason)}]` : ''),
+
+    INFO_MOVE_FILE_SUCCESS: args => ` ${green('✔')} ${args.filePath}`,
 }
 
 const NAME = Object.keys(MSG).reduce((acc, key) => ({
