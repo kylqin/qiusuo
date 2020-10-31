@@ -150,7 +150,7 @@ function show(lst, searchTerm, requestResult) {
      */
     // Generate line context with line number
     function mkLabelText(row, idx) {
-        return `{gray-fg}${Utils.pad(3, idx, ' ')}{/gray-fg} ${row.string}`
+        return `{gray-fg}${String(idx).padStart(3, ' ')}{/gray-fg} ${row.string}`
     }
 
     // Select row by index
