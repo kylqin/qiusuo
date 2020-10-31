@@ -39,7 +39,7 @@ function show(lst, searchTerm, requestResult) {
         fullUnicode: true,
     })
 
-    screen.title = '求索 - qiusou'
+    screen.title = '求索 - qiusuo'
 
     const Input = addInput(screen)
     const List = mkList(screen)
