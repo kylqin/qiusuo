@@ -20,6 +20,8 @@ qs -h
 
 ### 使用示例
 
+根据配置文件中的 Section (通过 `--section=<section>` 或 `-s <section>` 指定) 执行搜索或收集任务(见<a href="#配置文件">配置文件</a>)。
+
 ```sh
 qs -s books s 金庸                     # search books
 qs --section=notes search mathematic   # search notes
@@ -28,7 +30,7 @@ qs -s books collect                    # collect downloaded books to your target
 
 ### Keyboard Map
 
-QIUSUO 使用 Vim 风格的键盘快捷键。
+QIUSUO 使用 Vim 风格的键盘映射。
 
 | key | 功能 |
 | - | - |
@@ -45,7 +47,7 @@ QIUSUO 使用 Vim 风格的键盘快捷键。
 | `G` | 光标移动到最后一项 |
 | `q` | 退出 |
 
-搜索框为激活状态时：
+搜索框为激活状态时，有如下按键映射。
 
 | key | 功能 |
 | - | - |
