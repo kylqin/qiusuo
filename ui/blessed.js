@@ -119,7 +119,7 @@ function show(lst, searchTerm, requestResult) {
 
     // Initial
 
-    Cmd.setTitle('求索 - qiusuo')
+    Cmd.setTitle('QIUSUO - 求索')
 
     Cmd.updateList()
     Cmd.updatedLineNumbers(0)

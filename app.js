@@ -12,8 +12,6 @@ const CmdTable = {
     '-c': showConf,
     '--conf': showConf,
 
-    // '-s': execAction,
-
     default: showHelp
 }
 
