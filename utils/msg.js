@@ -18,7 +18,7 @@ Options:
 
 These are common sub commands used to search information:
 
-   exec, e         Search documents with types and location configured in section <section>
+   search, s       Search documents with types and location configured in section <section>
    collect, c      Collect files from \`collectFrom\` directories
    collect --dry-run, c --dry-run
 
