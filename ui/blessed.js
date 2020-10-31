@@ -24,7 +24,7 @@ module.exports = {
 }
 
 // Generate line context with line number
-function mkLabelText(row, idx) {
+function lineWithNumber(row, idx) {
     return `{gray-fg}${String(idx).padStart(3, ' ')}{/gray-fg} ${row.string}`
 }
 
@@ -32,7 +32,7 @@ function mkLabelText(row, idx) {
 function show(lst, searchTerm, requestResult) {
     const State = {
         _lst: lst,
-        inputSearchText: `*${searchTerm}`,
+        inputSearchText: `~${searchTerm}`,
         _mode: M.Normal,
         prefixNum: '',
     }
@@ -73,9 +73,8 @@ function show(lst, searchTerm, requestResult) {
     })
 
 
-    /**
-     * Screen events
-     */
+    /** Screen Events */
+
     // Accumulate the prefix num
     const regDigit = /^\d$/
     Screen.on('keypress', (key, o) => {
@@ -92,15 +91,11 @@ function show(lst, searchTerm, requestResult) {
         return false
     })
 
-    /**
-     * helpers
-     */
-
-    // Exec action
+    // Exec actions
     function execAction (name) {
         if (name === 'search') {
             // search
-            Cmd.setInputContent(State.inputSearchText.replace(/\//, '*'))
+            Cmd.setInputContent(State.inputSearchText.replace(/\//, '~'))
             const st = State.inputSearchText.slice(1)
             requestResult(st, (result) => {
                 State._lst = result || []
@@ -109,9 +104,8 @@ function show(lst, searchTerm, requestResult) {
         }
     }
 
-    /**
-     * _mode
-     */
+    /** mode */
+
     function mapNormal(keys, handler) {
         Screen.key(keys, (...args) => { isMode(M.Normal) && handler(...args) })
     }
@@ -123,9 +117,12 @@ function show(lst, searchTerm, requestResult) {
         return State._mode === mode
     }
 
+    // Initial
+
     Cmd.setTitle('求索 - qiusuo')
 
     Cmd.updateList()
+    Cmd.updatedLineNumbers(0)
 
     Cmd.setInputContent(State.inputSearchText)
 }
@@ -149,13 +146,13 @@ function buildCommands(State, Screen, List, Input) {
 
     // Select row by offset
     cmd.selectOffset = (offset) => {
-        cmd.select(Math.max(0, Math.min(List.selected + offset, State._lst.length)))
+        cmd.select(Math.max(0, Math.min(List.selected + offset, State._lst.length - 1)))
     }
 
     // Update line numbers
     cmd.updatedLineNumbers = (idx) => {
         for (let [i, row] of State._lst.entries()) {
-            List.setItem(List.children[i + 1], mkLabelText(row, i == idx ? i : Math.abs(i - idx)))
+            List.setItem(List.children[i + 1], lineWithNumber(row, i == idx ? i + 1 : Math.abs(i - idx)))
         }
     }
 
@@ -193,7 +190,7 @@ function buildCommands(State, Screen, List, Input) {
     }
 
     cmd.updateList = () => {
-        const listLabels = State._lst.map((row, idx) => mkLabelText(row, idx))
+        const listLabels = State._lst.map((row, idx) => lineWithNumber(row, idx))
         List.setItems(listLabels)
 
         /**
