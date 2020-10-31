@@ -4,6 +4,12 @@
 
 ![](https://github.com/kylqin/qiusuo/blob/master/assets/qiusuo.png?raw=true)
 
+## 安装
+
+```sh
+npm install -g qiusuo
+```
+
 ## 使用
 
 ### --help
