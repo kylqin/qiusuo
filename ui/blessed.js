@@ -353,5 +353,5 @@ function ListComponent(screen) {
 
 // Help to debug
 function log(...msg) {
-    cp.execSync(`echo "${msg}" >> _log`)
+    // cp.execSync(`echo "${msg}" >> _log`)
 }
