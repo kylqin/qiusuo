@@ -2,6 +2,8 @@
 
 根据文件类型管理文件，提交文件分类收集和根据文件名搜索文件的功能。
 
+![](https://github.com/kylqin/qiusuo/blob/master/assets/qiusuo.png?raw=true)
+
 ## 使用
 
 ### --help
@@ -45,10 +47,9 @@ QIUSUO 使用 Vim 风格的键盘快捷键。
 | `<C-g>` | 取消搜索 |
 | `<C-u>` | 清空搜索输入框 |
 
-
 ## 配置文件
 
-配置文件举例：
+配置文件(`~/.qsconf.json`)举例：
 
 ```json
 {
