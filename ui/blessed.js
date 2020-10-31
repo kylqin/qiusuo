@@ -126,6 +126,8 @@ function show(lst, searchTerm, requestResult) {
     Cmd.setTitle('求索 - qiusuo')
 
     Cmd.updateList()
+
+    Cmd.setInputContent(State.inputSearchText)
 }
 
 function buildCommands(State, Screen, List, Input) {
