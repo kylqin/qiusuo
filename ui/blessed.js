@@ -62,10 +62,10 @@ function show(lst, searchTerm, requestResult) {
     const Cmd = buildCommands(State, Screen, List, Input)
 
     // Keyboard Normal Mode Map
-    buildNormalMap(mapNormal, Cmd, { State, M })
+    buildNormalMap(mapNormal, Cmd, { State, List })
 
     // Keyboard Command Mode Map
-    buildCommandMap(mapCommand, Cmd, { State, M })
+    buildCommandMap(mapCommand, Cmd, { State })
     mapCommand(['enter'], (ch, key) => {
         Cmd.setMode(M.Normal)
         // log('keypress -> ' + 'Enter')
@@ -210,7 +210,7 @@ function buildCommands(State, Screen, List, Input) {
     return cmd
 }
 
-function buildNormalMap(mapNormal, Cmd, { State, M }) {
+function buildNormalMap(mapNormal, Cmd, { State, List }) {
     // Quit on Escape, q, or Control-C.
     mapNormal(['q'], (ch, key) => {
         Cmd.setTitle('')
@@ -253,7 +253,7 @@ function buildNormalMap(mapNormal, Cmd, { State, M }) {
     })
 }
 
-function buildCommandMap(mapCommand, Cmd, { State, M }) {
+function buildCommandMap(mapCommand, Cmd, { State }) {
     mapCommand(['backspace'], (ch, key) => {
         // log('mapCommand backspace')
         Cmd.setInputContent(`/${State.inputSearchText.slice(1, -2)}`)
