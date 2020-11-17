@@ -1,6 +1,6 @@
 {
   "name": "qiusuo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "求索 A command lien documents management system.",
   "main": "index.js",
   "bin": {
